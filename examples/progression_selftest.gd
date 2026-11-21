@@ -3,8 +3,8 @@ extends Node
 ## dot-progression's headless suite (res://examples/progression_selftest.tscn).
 ## Counts sections run to their last line as well as checks, because a script error aborts a section and not the run.
 
-const EXPECTED_SECTIONS := 5
-const EXPECTED_CHECKS := 61
+const EXPECTED_SECTIONS := 7
+const EXPECTED_CHECKS := 82
 
 var _passed := 0
 var _failed := 0
@@ -18,6 +18,8 @@ func _ready() -> void:
 	_state()
 	_track()
 	_challenges()
+	_unlocks()
+	_runtime()
 	print("")
 	_check(_sections == EXPECTED_SECTIONS, "every section ran to its last line (%d of %d)" % [_sections, EXPECTED_SECTIONS])
 	_check(_passed + _failed == EXPECTED_CHECKS, "and the suite ran all %d of its checks (%d)" % [EXPECTED_CHECKS, _passed + _failed])
@@ -157,6 +159,52 @@ func _challenges() -> void:
 	_check(DotProgressionChallenges.roll(rolled, a)["entries"][id]["progress"] == 3, "the same period keeps its progress")
 	var next := DotProgressionChallenges.assign(c, pool, "p1", 90000, "daily")
 	_check(DotProgressionChallenges.roll(rolled, next)["entries"][next["ids"][0]]["progress"] == 0, "a new period resets progress")
+	_sections += 1
+
+
+func _unlocks() -> void:
+	var t := {"skin": 5, "map": 12, "hat": 5}
+	_check(DotProgressionUnlocks.validate(t).ok, "a table validates")
+	_check(not DotProgressionUnlocks.validate({"x": 0}).ok and not DotProgressionUnlocks.validate({"": 1}).ok, "level 0 and empty ids are refused")
+	_check(DotProgressionUnlocks.is_unlocked(t, "skin", 5) and not DotProgressionUnlocks.is_unlocked(t, "skin", 4), "unlocks at its level")
+	_check(not DotProgressionUnlocks.is_unlocked(t, "nope", 99), "an unknown id is never unlocked")
+	_check(DotProgressionUnlocks.unlocked_at(t, 5) == ["hat", "skin"], "unlocked_at sorts by level then id")
+	_check(DotProgressionUnlocks.opened_between(t, 5, 12) == ["map"], "opened_between excludes the lower bound")
+	_check(DotProgressionUnlocks.level_of(t, "map") == 12 and DotProgressionUnlocks.level_of(t, "zz") == 0, "level_of")
+	var c := DotProgressionConfig.new()
+	c.growth = 1.0
+	c.base_xp = 10
+	_check(DotProgressionCurve.level_for(c, 2000000000) == 200000001, "a flat curve is closed form, not a loop")
+	_check(DotProgressionCurve.total_xp_for(c, 4) == 30, "flat total xp")
+	c.max_level = 5
+	_check(DotProgressionCurve.level_for(c, 1000000) == 5, "a flat curve honours max_level")
+	_sections += 1
+
+
+func _runtime() -> void:
+	var p := DotProgression.new()
+	p.unlocks = {"skin": 2}
+	var log := []
+	p.xp_changed.connect(func(x, l): log.append("xp:%d:%d" % [x, l]))
+	p.leveled_up.connect(func(l, n, u): log.append("up:%d:%d:%s" % [l, n, u]))
+	_check(p.level() == 1 and p.xp() == 0, "starts at level 1")
+	_check(p.grant(50).ok and log == ["xp:50:1"], "a small grant only changes xp")
+	log.clear()
+	_check(p.grant(60).ok and log == ["xp:110:2", "up:2:1:[\"skin\"]"], "a level-up announces what it unlocked")
+	_check(p.is_unlocked("skin") and not p.is_unlocked("other"), "is_unlocked follows the level")
+	_check(p.progress()["level"] == 2, "progress reports the level")
+	_check(p.grant(-1).code() == DotError.CODE_INVALID and p.xp() == 110, "a refused grant changes nothing")
+	var saved := p.to_dict()
+	saved["xp"] = 5
+	_check(p.xp() == 110, "to_dict is a copy")
+	var q := DotProgression.new()
+	_check(q.load_dict({"xp": 300, "claimed": []}).ok and q.xp() == 300, "load_dict restores a state")
+	_check(not q.load_dict({"xp": -4, "claimed": []}).ok and q.xp() == 300, "a bad document leaves the state alone")
+	var track: DotProgressionTrack = DotProgressionTrack.from_dict({"id": "s1", "tiers": [{"level": 2, "reward": "gem"}]}).value
+	var claimed := []
+	q.reward_claimed.connect(func(t, r): claimed.append(t + ":" + r))
+	_check(q.claim(track, 2).value == "gem" and claimed == ["s1:gem"], "claim emits the reward")
+	_check(q.claim(track, 2).code() == DotError.CODE_CONFLICT, "a second claim fails")
 	_sections += 1
 
 

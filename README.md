@@ -4,6 +4,8 @@ Godot 4.7+ addon for XP, levels, season and battle-pass tracks, daily and weekly
 
 A player's progression is one small Dictionary (`xp` and the tiers claimed). Everything else is a pure function over it: the XP curve, level lookups, reward tracks and the daily or weekly challenge deal. Server and client compute the same answer, and a server needs no art loaded to check a claim.
 
+`DotProgressionUnlocks` answers "what does this level open" from a `{id: level}` table. `DotProgression` is the live object for a HUD: it holds the state, emits `xp_changed`, `leveled_up` (with the ids the level-up unlocked) and `reward_claimed`, and hands the state to `to_dict()` / `load_dict()` so GameSpice Save or a server stores it. A flat curve (`growth` 1.0) is computed in closed form, so a huge grant never loops.
+
 ## Install
 
 1. Copy `addons/dot_progression/` and `addons/dot_core/` into your project.

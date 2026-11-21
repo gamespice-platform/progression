@@ -13,6 +13,8 @@ static func xp_to_next(cfg: DotProgressionConfig, level: int) -> int:
 
 ## Total XP at which [param level] is reached. Level 1 is 0.
 static func total_xp_for(cfg: DotProgressionConfig, level: int) -> int:
+	if cfg.growth == 1.0:
+		return maxi(0, level - 1) * cfg.base_xp
 	var total := 0
 	for l in range(1, level):
 		total += xp_to_next(cfg, l)
@@ -21,6 +23,9 @@ static func total_xp_for(cfg: DotProgressionConfig, level: int) -> int:
 
 ## The level a total of [param xp] is, never above [member DotProgressionConfig.max_level] when that is set.
 static func level_for(cfg: DotProgressionConfig, xp: int) -> int:
+	if cfg.growth == 1.0:
+		var flat := 1 + maxi(0, xp) / cfg.base_xp
+		return mini(flat, cfg.max_level) if cfg.max_level > 0 else flat
 	var level := 1
 	var need := xp_to_next(cfg, 1)
 	var left := maxi(0, xp)
