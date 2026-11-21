@@ -4,11 +4,11 @@ XP, levels, reward tracks and daily/weekly challenges as pure functions over a s
 
 | Path | What |
 | --- | --- |
-| `core/dot_progression_config.gd` | `DotProgressionConfig`: every tunable, `from_files()` |
-| `core/dot_progression_curve.gd` | `DotProgressionCurve`: xp per level, total xp, level for xp, progress |
-| `core/dot_progression_state.gd` | `DotProgressionState`: `{xp, claimed}`, validate, grant |
-| `core/dot_progression_track.gd` | `DotProgressionTrack`: season/battle-pass tiers as a document, claim |
-| `core/dot_progression_challenges.gd` | `DotProgressionChallenges`: period keys, deterministic deal, progress |
+| `core/dot_progression_config.gd` | `GSProgressionConfig`: every tunable, `from_files()` |
+| `core/dot_progression_curve.gd` | `GSProgressionCurve`: xp per level, total xp, level for xp, progress |
+| `core/dot_progression_state.gd` | `GSProgressionState`: `{xp, claimed}`, validate, grant |
+| `core/dot_progression_track.gd` | `GSProgressionTrack`: season/battle-pass tiers as a document, claim |
+| `core/dot_progression_challenges.gd` | `GSProgressionChallenges`: period keys, deterministic deal, progress |
 | `examples/progression_selftest.tscn` | the suite |
 
 - **Boundary**: not dot-achievements (one-off goals over stats), not dot-stats (counters), not dot-economy (round buy money) or dot-store (selling). A tier names a reward id and never grants it; storage is dot-save or the game's backend. No class name overlaps any other addon.

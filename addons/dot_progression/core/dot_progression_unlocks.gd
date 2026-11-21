@@ -1,17 +1,17 @@
-class_name DotProgressionUnlocks
+class_name GSProgressionUnlocks
 extends RefCounted
 
 ## An unlock table as pure functions: which things a level opens. A table is {id: level}, for example {"skin_red": 5, "map_dunes": 12}. Server and client agree because there is nothing but the level to look at.
 
 
 ## Checks a table: every id non-empty and every level at least 1.
-static func validate(table: Dictionary) -> DotResult:
+static func validate(table: Dictionary) -> GSResult:
 	for id in table:
 		if not (id is String) or (id as String).is_empty():
-			return DotResult.fail(DotError.CODE_INVALID, "unlock ids must be non-empty strings")
+			return GSResult.fail(GSError.CODE_INVALID, "unlock ids must be non-empty strings")
 		if not (table[id] is int or table[id] is float) or int(table[id]) < 1:
-			return DotResult.fail(DotError.CODE_INVALID, "unlock '%s' needs a level of at least 1" % id)
-	return DotResult.success(table)
+			return GSResult.fail(GSError.CODE_INVALID, "unlock '%s' needs a level of at least 1" % id)
+	return GSResult.success(table)
 
 
 ## True when [param id] is open at [param level]. An id that is not in the table is not unlocked.

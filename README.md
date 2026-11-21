@@ -4,7 +4,7 @@ Godot 4.7+ addon for XP, levels, season and battle-pass tracks, daily and weekly
 
 A player's progression is one small Dictionary (`xp` and the tiers claimed). Everything else is a pure function over it: the XP curve, level lookups, reward tracks and the daily or weekly challenge deal. Server and client compute the same answer, and a server needs no art loaded to check a claim.
 
-`DotProgressionUnlocks` answers "what does this level open" from a `{id: level}` table. `DotProgression` is the live object for a HUD: it holds the state, emits `xp_changed`, `leveled_up` (with the ids the level-up unlocked) and `reward_claimed`, and hands the state to `to_dict()` / `load_dict()` so GameSpice Save or a server stores it. A flat curve (`growth` 1.0) is computed in closed form, so a huge grant never loops.
+`GSProgressionUnlocks` answers "what does this level open" from a `{id: level}` table. `GSProgression` is the live object for a HUD: it holds the state, emits `xp_changed`, `leveled_up` (with the ids the level-up unlocked) and `reward_claimed`, and hands the state to `to_dict()` / `load_dict()` so GameSpice Save or a server stores it. A flat curve (`growth` 1.0) is computed in closed form, so a huge grant never loops.
 
 ## Install
 
@@ -14,30 +14,30 @@ A player's progression is one small Dictionary (`xp` and the tiers claimed). Eve
 ## Quick start
 
 ```gdscript
-var cfg := DotProgressionConfig.from_files().value   # defaults, cfg/addon/dot_progression/*.yml, DOT_PROGRESSION_*, --progression-*
-var state := DotProgressionState.create()            # {xp: 0, claimed: []}
+var cfg := GSProgressionConfig.from_files().value   # defaults, cfg/addon/dot_progression/*.yml, DOT_PROGRESSION_*, --progression-*
+var state := GSProgressionState.create()            # {xp: 0, claimed: []}
 
-var g := DotProgressionState.grant(cfg, state, 250)  # refuses negatives and anything over max_grant
+var g := GSProgressionState.grant(cfg, state, 250)  # refuses negatives and anything over max_grant
 if g.ok:
     state = g.value["state"]
     print(g.value["levels_gained"])
 
-var track := DotProgressionTrack.from_dict({"id": "season1", "tiers": [
+var track := GSProgressionTrack.from_dict({"id": "season1", "tiers": [
     {"level": 2, "reward": "spray_a"},
     {"level": 2, "reward": "skin_gold", "premium": true}]}).value
 var claim := track.claim(cfg, state, 2, false, false)    # level, premium tier?, owns premium?
 if claim.ok:
     state = claim.value["state"]                         # claim.value["reward"] is the id to grant
 
-var dealt := DotProgressionChallenges.assign(cfg, pool, player_id, Time.get_unix_time_from_system(), "daily")
-var rolled := DotProgressionChallenges.roll(held, dealt) # keeps progress inside a period, resets across one
+var dealt := GSProgressionChallenges.assign(cfg, pool, player_id, Time.get_unix_time_from_system(), "daily")
+var rolled := GSProgressionChallenges.roll(held, dealt) # keeps progress inside a period, resets across one
 ```
 
-`DotProgressionCurve.progress(cfg, xp)` gives `{level, into, needed, fraction}` for a progress bar.
+`GSProgressionCurve.progress(cfg, xp)` gives `{level, into, needed, fraction}` for a progress bar.
 
 ## Settings
 
-Every number is a field on `DotProgressionConfig`. A zero in a limit means unlimited. Ranges are inspector slider limits, not enforced caps.
+Every number is a field on `GSProgressionConfig`. A zero in a limit means unlimited. Ranges are inspector slider limits, not enforced caps.
 
 | Setting | Default | What it does |
 | --- | --- | --- |

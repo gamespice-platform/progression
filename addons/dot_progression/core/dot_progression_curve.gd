@@ -1,18 +1,18 @@
-class_name DotProgressionCurve
+class_name GSProgressionCurve
 extends RefCounted
 
 ## The XP curve as pure functions: what a level costs, what total XP a level needs and which level a total is. Levels count from 1.
 
 
 ## XP to go from [param level] to the next.
-static func xp_to_next(cfg: DotProgressionConfig, level: int) -> int:
+static func xp_to_next(cfg: GSProgressionConfig, level: int) -> int:
 	if level < 1:
 		return cfg.base_xp
 	return maxi(1, int(floor(cfg.base_xp * pow(cfg.growth, level - 1) + 0.000001)))
 
 
 ## Total XP at which [param level] is reached. Level 1 is 0.
-static func total_xp_for(cfg: DotProgressionConfig, level: int) -> int:
+static func total_xp_for(cfg: GSProgressionConfig, level: int) -> int:
 	if cfg.growth == 1.0:
 		return maxi(0, level - 1) * cfg.base_xp
 	var total := 0
@@ -21,8 +21,8 @@ static func total_xp_for(cfg: DotProgressionConfig, level: int) -> int:
 	return total
 
 
-## The level a total of [param xp] is, never above [member DotProgressionConfig.max_level] when that is set.
-static func level_for(cfg: DotProgressionConfig, xp: int) -> int:
+## The level a total of [param xp] is, never above [member GSProgressionConfig.max_level] when that is set.
+static func level_for(cfg: GSProgressionConfig, xp: int) -> int:
 	if cfg.growth == 1.0:
 		var flat := 1 + maxi(0, xp) / cfg.base_xp
 		return mini(flat, cfg.max_level) if cfg.max_level > 0 else flat
@@ -39,7 +39,7 @@ static func level_for(cfg: DotProgressionConfig, xp: int) -> int:
 
 
 ## {level, into, needed, fraction}: where [param xp] sits inside its level. At the top level `needed` is 0 and `fraction` is 1.
-static func progress(cfg: DotProgressionConfig, xp: int) -> Dictionary:
+static func progress(cfg: GSProgressionConfig, xp: int) -> Dictionary:
 	var level := level_for(cfg, xp)
 	var into := maxi(0, xp) - total_xp_for(cfg, level)
 	if cfg.max_level > 0 and level >= cfg.max_level:

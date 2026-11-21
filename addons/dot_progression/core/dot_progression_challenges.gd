@@ -1,4 +1,4 @@
-class_name DotProgressionChallenges
+class_name GSProgressionChallenges
 extends RefCounted
 
 ## Daily and weekly challenges as pure functions: which period a time falls in, a deterministic deal from a pool, and progress that resets when the period turns. A pool entry is {id, goal}; the deal is the same on server and client.
@@ -8,7 +8,7 @@ const WEEKLY := "weekly"
 
 
 ## The period number [param unix] falls in. It changes at each reset.
-static func period_key(cfg: DotProgressionConfig, unix: int, kind: String) -> int:
+static func period_key(cfg: GSProgressionConfig, unix: int, kind: String) -> int:
 	var length := cfg.week_seconds if kind == WEEKLY else cfg.day_seconds
 	return int(floor(float(unix - cfg.reset_offset_seconds) / float(length)))
 
@@ -17,7 +17,7 @@ static func period_key(cfg: DotProgressionConfig, unix: int, kind: String) -> in
 static func deal(pool: Array, seed_text: String, count: int) -> Array:
 	var ranked: Array = []
 	for entry: Dictionary in pool:
-		ranked.append([DotHash.sha256_text(seed_text + "|" + str(entry["id"])), str(entry["id"])])
+		ranked.append([GSHash.sha256_text(seed_text + "|" + str(entry["id"])), str(entry["id"])])
 	ranked.sort()
 	var out: Array = []
 	for r: Array in ranked:
@@ -28,7 +28,7 @@ static func deal(pool: Array, seed_text: String, count: int) -> Array:
 
 
 ## What a player is dealt now: {period, ids}. [param player_seed] is a stable pseudonymous id.
-static func assign(cfg: DotProgressionConfig, pool: Array, player_seed: String, unix: int, kind: String) -> Dictionary:
+static func assign(cfg: GSProgressionConfig, pool: Array, player_seed: String, unix: int, kind: String) -> Dictionary:
 	var period := period_key(cfg, unix, kind)
 	var count := cfg.weekly_count if kind == WEEKLY else cfg.daily_count
 	return {"period": period, "ids": deal(pool, "%s|%s|%d" % [player_seed, kind, period], count)}
@@ -49,11 +49,11 @@ static func roll(held: Dictionary, dealt: Dictionary) -> Dictionary:
 
 
 ## Add [param amount] to a challenge of [param goal]. Progress stops at the goal; the value is the new entry. Negative amounts and unknown ids fail.
-static func advance(rolled: Dictionary, id: String, goal: int, amount: int) -> DotResult:
+static func advance(rolled: Dictionary, id: String, goal: int, amount: int) -> GSResult:
 	if amount < 0:
-		return DotResult.fail(DotError.CODE_INVALID, "challenge progress %d is negative" % amount)
+		return GSResult.fail(GSError.CODE_INVALID, "challenge progress %d is negative" % amount)
 	if not (rolled["entries"] as Dictionary).has(id):
-		return DotResult.fail(DotError.CODE_INVALID, "challenge '%s' is not dealt this period" % id)
+		return GSResult.fail(GSError.CODE_INVALID, "challenge '%s' is not dealt this period" % id)
 	var e: Dictionary = (rolled["entries"] as Dictionary)[id]
 	var p := mini(int(e["progress"]) + amount, goal)
-	return DotResult.success({"progress": p, "done": p >= goal})
+	return GSResult.success({"progress": p, "done": p >= goal})

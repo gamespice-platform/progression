@@ -1,5 +1,5 @@
-class_name DotProgressionConfig
-extends DotConfig
+class_name GSProgressionConfig
+extends GSConfig
 
 ## Every tunable of progression. `cfg/addon/dot_progression/*.yml`, `DOT_PROGRESSION_*` and `--progression-*` layer over these defaults. A zero in a limit means unlimited.
 
@@ -39,22 +39,22 @@ func cli_prefix() -> String:
 	return "--progression-"
 
 
-func validate() -> DotResult:
+func validate() -> GSResult:
 	if base_xp < 1:
-		return DotResult.fail(DotError.CODE_INVALID, "progression base_xp %d is below 1" % base_xp)
+		return GSResult.fail(GSError.CODE_INVALID, "progression base_xp %d is below 1" % base_xp)
 	if growth < 1.0:
-		return DotResult.fail(DotError.CODE_INVALID, "progression growth %s is below 1.0, levels would get cheaper" % growth)
+		return GSResult.fail(GSError.CODE_INVALID, "progression growth %s is below 1.0, levels would get cheaper" % growth)
 	if max_level < 0 or max_grant < 0 or daily_count < 0 or weekly_count < 0:
-		return DotResult.fail(DotError.CODE_INVALID, "progression limits cannot be negative (0 is unlimited)")
+		return GSResult.fail(GSError.CODE_INVALID, "progression limits cannot be negative (0 is unlimited)")
 	if day_seconds < 1 or week_seconds < 1:
-		return DotResult.fail(DotError.CODE_INVALID, "progression periods must be at least one second")
-	return DotResult.success(self)
+		return GSResult.fail(GSError.CODE_INVALID, "progression periods must be at least one second")
+	return GSResult.success(self)
 
 
 ## Defaults, then `cfg/addon/dot_progression/*.yml`, then environment and command line.
-static func from_files() -> DotResult:
-	var cfg := DotProgressionConfig.new()
-	var files := DotAddonConfig.load_dir(ADDON)
+static func from_files() -> GSResult:
+	var cfg := GSProgressionConfig.new()
+	var files := GSAddonConfig.load_dir(ADDON)
 	if not files.ok:
 		return files
 	cfg.apply_dictionary(files.value as Dictionary, "yml")
