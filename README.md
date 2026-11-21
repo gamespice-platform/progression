@@ -8,13 +8,13 @@ A player's progression is one small Dictionary (`xp` and the tiers claimed). Eve
 
 ## Install
 
-1. Copy `addons/dot_progression/` and `addons/dot_core/` into your project.
-2. Enable dot-progression in *Project > Project Settings > Plugins*.
+1. Copy `addons/gs_progression/` and `addons/gs_core/` into your project.
+2. Enable gs-progression in *Project > Project Settings > Plugins*.
 
 ## Quick start
 
 ```gdscript
-var cfg := GSProgressionConfig.from_files().value   # defaults, cfg/addon/dot_progression/*.yml, DOT_PROGRESSION_*, --progression-*
+var cfg := GSProgressionConfig.from_files().value   # defaults, cfg/addon/gs_progression/*.yml, GS_PROGRESSION_*, --progression-*
 var state := GSProgressionState.create()            # {xp: 0, claimed: []}
 
 var g := GSProgressionState.grant(cfg, state, 250)  # refuses negatives and anything over max_grant

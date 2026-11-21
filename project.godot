@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="dot-progression"
+config/name="gs-progression"
 config/description="Godot 4.7+ addon for XP, levels, season and battle-pass tracks, daily and weekly challenges and unlock tables as a bounded document a dedicated server can validate, reporting to the TMC backbone. Part of the GameSpice addon family."
 run/main_scene="res://examples/progression_selftest.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
@@ -19,7 +19,7 @@ config/icon="res://icon.svg"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/dot_progression/plugin.cfg")
+enabled=PackedStringArray("res://addons/gs_progression/plugin.cfg")
 
 [importer_defaults]
 

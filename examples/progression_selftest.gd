@@ -1,6 +1,6 @@
 extends Node
 
-## dot-progression's headless suite (res://examples/progression_selftest.tscn).
+## gs-progression's headless suite (res://examples/progression_selftest.tscn).
 ## Counts sections run to their last line as well as checks, because a script error aborts a section and not the run.
 
 const EXPECTED_SECTIONS := 7
@@ -12,7 +12,7 @@ var _sections := 0
 
 
 func _ready() -> void:
-	print("dot-progression")
+	print("gs-progression")
 	_config()
 	_curve()
 	_state()
@@ -42,7 +42,7 @@ func _config() -> void:
 	c.max_grant = 0
 	var applied := c.apply_dictionary({"base_xp": 250, "growth": 1.5, "max_level": 30})
 	_check(applied.size() == 3 and c.base_xp == 250 and c.growth == 1.5 and c.max_level == 30, "a dictionary layer sets every type", str(applied))
-	_check(c.env_prefix() == "DOT_PROGRESSION_" and c.cli_prefix() == "--progression-", "env and command-line prefixes")
+	_check(c.env_prefix() == "GS_PROGRESSION_" and c.cli_prefix() == "--progression-", "env and command-line prefixes")
 	var r := GSProgressionConfig.from_files()
 	_check(r.ok and r.value is GSProgressionConfig, "from_files returns a config")
 	_sections += 1

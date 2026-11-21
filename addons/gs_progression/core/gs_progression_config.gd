@@ -1,9 +1,9 @@
 class_name GSProgressionConfig
 extends GSConfig
 
-## Every tunable of progression. `cfg/addon/dot_progression/*.yml`, `DOT_PROGRESSION_*` and `--progression-*` layer over these defaults. A zero in a limit means unlimited.
+## Every tunable of progression. `cfg/addon/gs_progression/*.yml`, `GS_PROGRESSION_*` and `--progression-*` layer over these defaults. A zero in a limit means unlimited.
 
-const ADDON := "dot-progression"
+const ADDON := "gs-progression"
 
 ## Master switch: off, every grant fails with a state error.
 @export var enabled: bool = true
@@ -32,7 +32,7 @@ const ADDON := "dot-progression"
 
 
 func env_prefix() -> String:
-	return "DOT_PROGRESSION_"
+	return "GS_PROGRESSION_"
 
 
 func cli_prefix() -> String:
@@ -51,7 +51,7 @@ func validate() -> GSResult:
 	return GSResult.success(self)
 
 
-## Defaults, then `cfg/addon/dot_progression/*.yml`, then environment and command line.
+## Defaults, then `cfg/addon/gs_progression/*.yml`, then environment and command line.
 static func from_files() -> GSResult:
 	var cfg := GSProgressionConfig.new()
 	var files := GSAddonConfig.load_dir(ADDON)
