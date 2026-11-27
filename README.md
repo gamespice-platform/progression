@@ -70,7 +70,13 @@ The self-test is offline and exits non-zero on any failure.
 
 ## Status
 
-Built and maintained with Claude Code. The test suites pass, but little of this has been in front of real players yet. Please report rough edges by opening an issue.
+A GameSpice addon under the MIT licence, built with Claude Code. The headless scene `progression_selftest` exercises it. The games in [Zee's Games](https://zeesgames.com) are built on the GameSpice addons and run on live servers, but this one has not shipped in any of them yet.
+
+## Used by
+
+No shipped game uses it yet; the example scene (`progression_selftest`) shows it.
+
+The whole collection is at [zeesgames.com](https://zeesgames.com).
 
 ## Licence
 
